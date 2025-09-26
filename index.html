@@ -83,11 +83,11 @@
 
         // Ouvir tarefas do usuário
         if (unsub) unsub();
-        const q = query(
-          collection(db, 'tasks'),
-          where('uid', '==', user.uid),
-          orderBy('createdAt', 'desc')
-        );
+      const q = query(
+  collection(db, 'tasks'),
+  where('uid', '==', user.uid)
+);
+
         unsub = onSnapshot(q, (snap) => {
           taskList.innerHTML = '';
           snap.forEach((docSnap) => {
