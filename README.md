@@ -18,7 +18,7 @@ Criar um aplicativo web simples de gerenciamento de tarefas, utilizando:
 2. Abra o arquivo `index.html` no navegador.
 
 ## 🌐 Deploy
-🔗 Link do site no Netlify (a ser adicionado).
+🔗 Link do site no Netlify: https://68d69ba6d05cb664dfe68d54--sunny-granita-a83c71.netlify.app/
 
 ## 👨‍💻 Autor
 Francisco Laércio Moura de Sousa Filho
