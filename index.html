@@ -1,16 +1,133 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Task Manager - Projeto Nuvem</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 720px; margin: 32px auto; padding: 0 16px; }
+    h1 { margin-bottom: 8px; }
+    .auth { margin: 12px 0 24px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .row { display: flex; gap: 8px; margin: 16px 0; }
+    input[type="text"] { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 8px; }
+    button { padding: 10px 14px; border: none; border-radius: 8px; cursor: pointer; }
+    ul { padding-left: 18px; }
+    li { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }
+    .empty { color: #666; font-size: 0.95rem; }
+    .muted { color: #555; font-size: 0.9rem; }
+  </style>
 </head>
 <body>
   <h1>Task Manager</h1>
-  <p>Bem-vindo ao meu projeto de computação em nuvem!</p>
-  <ul id="taskList">
-    <li>Exemplo de tarefa 1</li>
-    <li>Exemplo de tarefa 2</li>
-  </ul>
+  <p class="muted">CRUD + Autenticação com Firebase (requisitos do Passo 2).</p>
+
+  <div class="auth">
+    <span id="userInfo" class="muted">Você não está logado.</span>
+    <button id="loginBtn">Login com Google</button>
+    <button id="logoutBtn" style="display:none;">Sair</button>
+  </div>
+
+  <div class="row" id="inputRow" style="display:none;">
+    <input id="taskInput" type="text" placeholder="Digite uma tarefa..." />
+    <button id="addBtn">Adicionar</button>
+  </div>
+
+  <ul id="taskList"></ul>
+  <p id="emptyState" class="empty" style="display:none;">Sem tarefas por enquanto.</p>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+    import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot, query, where, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+
+    // 🔁 SUBSTITUA este objeto pelo SEU firebaseConfig (copiado do console Firebase)
+    const firebaseConfig = {
+  apiKey: "AIzaSyAb0zcpXfZLGyuITtCfPC1kVSimEviY2Lg",
+  authDomain: "unifor-desenv-soft-nuvem.firebaseapp.com",
+  projectId: "unifor-desenv-soft-nuvem",
+  storageBucket: "unifor-desenv-soft-nuvem.firebasestorage.app",
+  messagingSenderId: "1096659770587",
+  appId: "1:1096659770587:web:1cb27065c595c6cc9940fe",
+  measurementId: "G-9RCNR7B1J2"
+};
+
+    // Inicializações
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    // Elementos da página
+    const userInfo = document.getElementById('userInfo');
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const inputRow = document.getElementById('inputRow');
+    const taskInput = document.getElementById('taskInput');
+    const addBtn = document.getElementById('addBtn');
+    const taskList = document.getElementById('taskList');
+    const emptyState = document.getElementById('emptyState');
+    const renderEmpty = () => { emptyState.style.display = taskList.children.length ? 'none' : 'block'; };
+
+    // Login / Logout
+    loginBtn.onclick = async () => { await signInWithPopup(auth, provider); };
+    logoutBtn.onclick = async () => { await signOut(auth); };
+
+    // Listener de autenticação
+    let unsub = null;
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        userInfo.textContent = `Logado como: ${user.displayName} (${user.email})`;
+        loginBtn.style.display = 'none';
+        logoutBtn.style.display = 'inline-block';
+        inputRow.style.display = 'flex';
+
+        // Ouvir tarefas do usuário
+        if (unsub) unsub();
+        const q = query(
+          collection(db, 'tasks'),
+          where('uid', '==', user.uid),
+          orderBy('createdAt', 'desc')
+        );
+        unsub = onSnapshot(q, (snap) => {
+          taskList.innerHTML = '';
+          snap.forEach((docSnap) => {
+            const t = docSnap.data();
+            const li = document.createElement('li');
+            const span = document.createElement('span');
+            span.textContent = t.text;
+            const removeBtn = document.createElement('button');
+            removeBtn.textContent = 'Remover';
+            removeBtn.onclick = async () => {
+              await deleteDoc(doc(db, 'tasks', docSnap.id));
+              renderEmpty();
+            };
+            li.append(span, removeBtn);
+            taskList.appendChild(li);
+          });
+          renderEmpty();
+        });
+      } else {
+        userInfo.textContent = 'Você não está logado.';
+        loginBtn.style.display = 'inline-block';
+        logoutBtn.style.display = 'none';
+        inputRow.style.display = 'none';
+        taskList.innerHTML = '';
+        renderEmpty();
+        if (unsub) { unsub(); unsub = null; }
+      }
+    });
+
+    // Criar tarefa
+    addBtn.onclick = async () => {
+      const text = taskInput.value.trim();
+      if (!text) return;
+      const user = auth.currentUser;
+      if (!user) return alert('Faça login para adicionar tarefas.');
+      await addDoc(collection(db, 'tasks'), { uid: user.uid, text, createdAt: serverTimestamp() });
+      taskInput.value = '';
+      taskInput.focus();
+    };
+    taskInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') addBtn.click(); });
+  </script>
 </body>
 </html>
