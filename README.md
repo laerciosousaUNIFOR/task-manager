@@ -34,9 +34,8 @@ flowchart LR
   A -->|CRUD tarefas| C
   A -. Deploy .-> D
   A -. Código/Versão .-> E
-
-
 ```
+
 ## ✅ Funcionalidades
 - Login/Logout com Google (Firebase Authentication)
 - Criar, Listar, Editar e Remover tarefas (Firestore)
