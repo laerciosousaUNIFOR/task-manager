@@ -17,17 +17,17 @@ Implementa autenticação com Google e CRUD de tarefas em tempo real, utilizando
 ## 🧱 Arquitetura
 
 ```mermaid
-flowchart LR
-  A[Navegador (Front-end HTML/JS)]
+graph LR
+  A[Browser Frontend HTML/JS]
   B[Firebase Auth]
-  C[Firestore (DB)]
+  C[Firestore DB]
   D[Netlify]
   E[GitHub]
 
-  A -->|Login Google| B
-  A -->|CRUD tarefas| C
-  A -. Deploy .-> D
-  A -. Código/Versão .-> E
+  A -- "Google Login" --> B
+  A -- "CRUD tasks" --> C
+  A -. "Deploy" .-> D
+  A -. "Code/Version" .-> E
 ```
 
 ---
@@ -84,5 +84,5 @@ Fluxo:
 ---
 
 ## 👨‍💻 Autor
-**Francisco Laércio Moura de Sousa Filho - matricula: 2317769**  
+**Francisco Laércio Moura de Sousa Filho - matricula:2317769**  
 Projeto desenvolvido como parte da disciplina **Desenvolvimento de Software para Nuvem**.
