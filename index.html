@@ -12,9 +12,10 @@
     input[type="text"] { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 8px; }
     button { padding: 10px 14px; border: none; border-radius: 8px; cursor: pointer; }
     ul { padding-left: 18px; }
-    li { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }
+    li { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 0; border-bottom: 1px solid #eee; }
     .empty { color: #666; font-size: 0.95rem; }
     .muted { color: #555; font-size: 0.9rem; }
+    .actions { display:flex; gap:6px; }
   </style>
 </head>
 <body>
@@ -38,26 +39,23 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
-    import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot, query, where, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot, query, where, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
-    // 🔁 SUBSTITUA este objeto pelo SEU firebaseConfig (copiado do console Firebase)
+    // 🔁 SUBSTITUA PELO SEU CONFIG
     const firebaseConfig = {
-  apiKey: "AIzaSyAb0zcpXfZLGyuITtCfPC1kVSimEviY2Lg",
-  authDomain: "unifor-desenv-soft-nuvem.firebaseapp.com",
-  projectId: "unifor-desenv-soft-nuvem",
-  storageBucket: "unifor-desenv-soft-nuvem.firebasestorage.app",
-  messagingSenderId: "1096659770587",
-  appId: "1:1096659770587:web:1cb27065c595c6cc9940fe",
-  measurementId: "G-9RCNR7B1J2"
-};
+      apiKey: "SUA_API_KEY",
+      authDomain: "SEU_AUTH_DOMAIN",
+      projectId: "SEU_PROJECT_ID",
+      storageBucket: "SEU_BUCKET",
+      messagingSenderId: "SEU_SENDER_ID",
+      appId: "SEU_APP_ID"
+    };
 
-    // Inicializações
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
 
-    // Elementos da página
     const userInfo = document.getElementById('userInfo');
     const loginBtn = document.getElementById('loginBtn');
     const logoutBtn = document.getElementById('logoutBtn');
@@ -68,11 +66,9 @@
     const emptyState = document.getElementById('emptyState');
     const renderEmpty = () => { emptyState.style.display = taskList.children.length ? 'none' : 'block'; };
 
-    // Login / Logout
     loginBtn.onclick = async () => { await signInWithPopup(auth, provider); };
     logoutBtn.onclick = async () => { await signOut(auth); };
 
-    // Listener de autenticação
     let unsub = null;
     onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -81,27 +77,39 @@
         logoutBtn.style.display = 'inline-block';
         inputRow.style.display = 'flex';
 
-        // Ouvir tarefas do usuário
+        // Consulta sem orderBy para evitar índice composto
         if (unsub) unsub();
-      const q = query(
-  collection(db, 'tasks'),
-  where('uid', '==', user.uid)
-);
-
+        const q = query(collection(db, 'tasks'), where('uid', '==', user.uid));
         unsub = onSnapshot(q, (snap) => {
           taskList.innerHTML = '';
           snap.forEach((docSnap) => {
             const t = docSnap.data();
             const li = document.createElement('li');
+
             const span = document.createElement('span');
             span.textContent = t.text;
+
+            const actions = document.createElement('div');
+            actions.className = 'actions';
+
+            const editBtn = document.createElement('button');
+            editBtn.textContent = 'Editar';
+            editBtn.onclick = async () => {
+              const novo = prompt('Editar tarefa:', t.text);
+              if (novo && novo.trim()) {
+                await updateDoc(doc(db, 'tasks', docSnap.id), { text: novo.trim() });
+              }
+            };
+
             const removeBtn = document.createElement('button');
             removeBtn.textContent = 'Remover';
             removeBtn.onclick = async () => {
               await deleteDoc(doc(db, 'tasks', docSnap.id));
               renderEmpty();
             };
-            li.append(span, removeBtn);
+
+            actions.append(editBtn, removeBtn);
+            li.append(span, actions);
             taskList.appendChild(li);
           });
           renderEmpty();
@@ -117,7 +125,6 @@
       }
     });
 
-    // Criar tarefa
     addBtn.onclick = async () => {
       const text = taskInput.value.trim();
       if (!text) return;
