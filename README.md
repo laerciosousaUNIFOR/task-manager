@@ -36,7 +36,7 @@ flowchart LR
   A -. Código/Versão .-> E
 
 
-```markdown
+```
 ## ✅ Funcionalidades
 - Login/Logout com Google (Firebase Authentication)
 - Criar, Listar, Editar e Remover tarefas (Firestore)
