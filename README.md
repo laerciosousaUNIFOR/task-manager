@@ -13,12 +13,36 @@ Criar um aplicativo web simples de gerenciamento de tarefas, utilizando:
 ## 🚀 Como rodar
 1. Baixe/clonar o repositório:
    ```bash
-   git clone https://github.com/SEU_USUARIO/task-manager.git
+   git clone https://github.com/laerciosousaUNIFOR/task-manager.git
    ```
 2. Abra o arquivo `index.html` no navegador.
 
 ## 🌐 Deploy
-🔗 Link do site no Netlify: https://68d69ba6d05cb664dfe68d54--sunny-granita-a83c71.netlify.app/
+🔗 Link do site no Netlify:https://laerciounifordevsoftnuvem.netlify.app/
+
+## 🧱 Arquitetura
+```mermaid
+flowchart LR
+  A[Navegador (Front-end HTML/JS)] -->|Login Google| B[Firebase Auth]
+  A -->|CRUD tarefas| C[Firestore (DB)]
+  A -. Deploy .-> D[Netlify]
+  A -. Código/Versão .-> E[GitHub]
+
+```markdown
+## ✅ Funcionalidades
+- Login/Logout com Google (Firebase Authentication)
+- Criar, Listar, Editar e Remover tarefas (Firestore)
+- Regras de segurança por usuário (cada um vê só suas tarefas)
+- Deploy contínuo no Netlify
+- Teste automatizado (Jest + GitHub Actions)
+
+## 🧪 Como rodar os testes (nuvem)
+- Os testes rodam automaticamente no GitHub Actions a cada push.
+- Workflow: `.github/workflows/tests.yml`
+
+## 🌐 Links
+- App (Netlify): https://app.netlify.com/teams/laerciosousaunifor/projects
+- Repositório: https://github.com/laerciosousaUNIFOR/task-manager
 
 ## 👨‍💻 Autor
-Francisco Laércio Moura de Sousa Filho
+Francisco Laércio Moura de Sousa Filho - matricula: 2317769
