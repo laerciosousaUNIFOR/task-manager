@@ -20,6 +20,8 @@ Criar um aplicativo web simples de gerenciamento de tarefas, utilizando:
 ## 🌐 Deploy
 🔗 Link do site no Netlify:https://laerciounifordevsoftnuvem.netlify.app/
 
+---
+
 ## 🧱 Arquitetura
 
 ```mermaid
@@ -35,6 +37,8 @@ flowchart LR
   A -. Deploy .-> D
   A -. Código/Versão .-> E
 ```
+
+---
 
 ## ✅ Funcionalidades
 - Login/Logout com Google (Firebase Authentication)
