@@ -1,4 +1,4 @@
-# 📌 TASK MANAGER(LISTA DE COMPRAS) - - Desenvolvimento de Software em Nuvem
+# 📌 TASK MANAGER(LISTA DE COMPRAS) - Desenvolvimento de Software em Nuvem
 
 Aplicação web para gerenciar tarefas/listas de compras, permitindo adicionar, editar e excluir itens em tempo real. 
 Desenvolvida como parte da disciplina de Desenvolvimento de Software para Nuvem, utilizando **Firebase** no back-end e **Netlify** no deploy.
