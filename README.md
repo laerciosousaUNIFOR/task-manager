@@ -1,7 +1,7 @@
-# 📌 Task Manager - Projeto de Computação em Nuvem
+# 📌 TASK MANAGER(LISTA DE COMPRAS) - Projeto de Computação em Nuvem
 
-Aplicação web simples para gerenciamento de tarefas, desenvolvida como parte da disciplina de Desenvolvimento de Software para Nuvem.  
-Implementa autenticação com Google e CRUD de tarefas em tempo real, utilizando **Firebase** no back-end e **Netlify** no deploy.
+Aplicação web para gerenciar tarefas/listas de compras, permitindo adicionar, editar e excluir itens em tempo real. 
+Desenvolvida como parte da disciplina de Desenvolvimento de Software para Nuvem, utilizando **Firebase** no back-end e **Netlify** no deploy.
 
 ---
 
