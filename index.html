@@ -77,7 +77,7 @@
         logoutBtn.style.display = 'inline-block';
         inputRow.style.display = 'flex';
 
-        // Consulta sem orderBy para evitar índice composto
+     
         if (unsub) unsub();
         const q = query(collection(db, 'tasks'), where('uid', '==', user.uid));
         unsub = onSnapshot(q, (snap) => {
